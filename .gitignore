@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Java / Quarkus / Maven
+target/
+*.class
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node / React
+node_modules/
+dist/
+build/
+.env
+
+# Data
+*.db
+*.sqlite3
+data/*.csv
+data/*.json
+!data/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+
+# 进度规则与记录:跨会话工作流文档,不是项目代码,不进版本控制
+进度规则与记录/
