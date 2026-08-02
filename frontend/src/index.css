@@ -1,16 +1,54 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
+
+  /* Chart chrome & ink — dark values from the project's data-viz palette */
+  --surface-page: #0d0d0d;
+  --surface-card: #1a1a19;
+  --surface-card-raised: #232322;
+  --ink-primary: #ffffff;
+  --ink-secondary: #c3c2b7;
+  --ink-muted: #898781;
+  --gridline: #2c2c2a;
+  --axis: #383835;
+  --border-hairline: rgba(255, 255, 255, 0.1);
+
+  /* Categorical series slots 1 & 2 (dark) */
+  --series-observed: #3987e5;
+  --series-fitted: #d95926;
+
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: var(--surface-page);
+  color: var(--ink-primary);
 }
 
 #root {
-  max-width: 960px;
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+select {
+  font: inherit;
 }
