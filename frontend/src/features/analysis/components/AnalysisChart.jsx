@@ -32,15 +32,15 @@ export default function AnalysisChart({ points, model }) {
   const curve = buildCurve(model.coefficients, points);
 
   return (
-    <ResponsiveContainer width="100%" height={360}>
-      <ComposedChart margin={{ top: 8, right: 16, bottom: 16, left: 0 }}>
+    <ResponsiveContainer width="100%" height={400}>
+      <ComposedChart margin={{ top: 8, right: 16, bottom: 24, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--gridline)" />
         <XAxis
           dataKey="temperature_bin_center"
           type="number"
           domain={["dataMin", "dataMax"]}
           tickFormatter={(value) => `${Math.round(value)}°`}
-          label={{ value: "Temperature (°C)", position: "insideBottom", offset: -8, fill: "var(--ink-muted)" }}
+          label={{ value: "Temperature (°C)", position: "bottom", offset: 0, fill: "var(--ink-muted)" }}
           stroke="var(--axis)"
           tick={{ fill: "var(--ink-muted)" }}
         />
@@ -65,7 +65,7 @@ export default function AnalysisChart({ points, model }) {
           formatter={(value, name) => [Number(value).toFixed(3), name]}
           labelFormatter={(value) => `${Number(value).toFixed(1)}°C`}
         />
-        <Legend wrapperStyle={{ color: "var(--ink-secondary)", fontSize: "0.85rem" }} />
+        <Legend wrapperStyle={{ color: "var(--ink-secondary)", fontSize: "0.85rem", paddingTop: 16 }} />
         <Scatter
           name="Observed frequency"
           data={points}
