@@ -3,3 +3,6 @@ pandas
 scipy
 statsmodels
 pytest
+fastapi
+uvicorn[standard]
+httpx
