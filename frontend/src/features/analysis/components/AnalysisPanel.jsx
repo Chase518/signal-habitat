@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
+import { Card, SegmentedControl, StatTile } from "../../../shared";
 import { fetchAnalysis } from "../api/analysisApi";
 import AnalysisChart from "./AnalysisChart";
+
+const MODEL_OPTIONS = [
+  { label: "Linear", value: "linear" },
+  { label: "Quadratic", value: "quadratic" },
+];
 
 export default function AnalysisPanel() {
   const [analysis, setAnalysis] = useState(null);
@@ -13,40 +19,58 @@ export default function AnalysisPanel() {
 
   if (error) {
     return (
-      <p role="alert">
-        Could not load analysis data — is the analysis service running on{" "}
-        <code>localhost:8000</code>?
-      </p>
+      <Card>
+        <p role="alert" style={{ margin: 0, color: "var(--ink-secondary)" }}>
+          Could not load analysis data — is the analysis service running on{" "}
+          <code>localhost:8000</code>?
+        </p>
+      </Card>
     );
   }
 
   if (!analysis) {
-    return <p>Loading analysis…</p>;
+    return (
+      <Card>
+        <p style={{ margin: 0, color: "var(--ink-secondary)" }}>Loading analysis…</p>
+      </Card>
+    );
   }
 
   const model = analysis.models[modelKey];
+  const { meta } = analysis;
+  const confidenceRate = ((meta.confident_reading_count / meta.raw_reading_count) * 100).toFixed(1);
 
   return (
-    <section>
-      <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "1rem" }}>
-        <label htmlFor="model-select">Fit model:</label>
-        <select id="model-select" value={modelKey} onChange={(e) => setModelKey(e.target.value)}>
-          <option value="linear">Linear</option>
-          <option value="quadratic">Quadratic</option>
-        </select>
-        <span style={{ color: "#94a3b8" }}>
-          R² = {model.r_squared.toFixed(3)}, max p-value ={" "}
-          {Math.max(...model.p_values).toExponential(2)}
-        </span>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap" }}>
+        <StatTile label="Sensors" value={meta.sensor_count} />
+        <StatTile label="Readings" value={meta.raw_reading_count.toLocaleString()} />
+        <StatTile
+          label="Passed confidence filter"
+          value={`${confidenceRate}%`}
+          hint={`${meta.confident_reading_count.toLocaleString()} of ${meta.raw_reading_count.toLocaleString()}`}
+        />
+        <StatTile label="Detections" value={meta.detection_count.toLocaleString()} />
       </div>
 
-      <AnalysisChart points={analysis.aggregated_points} model={model} />
-
-      <p style={{ color: "#94a3b8", fontSize: "0.9rem" }}>
-        {analysis.meta.confident_reading_count} of {analysis.meta.raw_reading_count} readings passed
-        the battery/RSSI confidence filter, across {analysis.meta.sensor_count} sensors, yielding{" "}
-        {analysis.meta.detection_count} detections.
-      </p>
-    </section>
+      <Card
+        title="Activity frequency vs. temperature"
+        action={
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+            <span style={{ color: "var(--ink-secondary)", fontSize: "0.85rem" }}>
+              R² = {model.r_squared.toFixed(3)}, max p = {Math.max(...model.p_values).toExponential(2)}
+            </span>
+            <SegmentedControl
+              aria-label="Fit model"
+              options={MODEL_OPTIONS}
+              value={modelKey}
+              onChange={setModelKey}
+            />
+          </div>
+        }
+      >
+        <AnalysisChart points={analysis.aggregated_points} model={model} />
+      </Card>
+    </div>
   );
 }

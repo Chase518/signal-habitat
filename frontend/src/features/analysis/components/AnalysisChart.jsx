@@ -1,6 +1,7 @@
 import {
   CartesianGrid,
   ComposedChart,
+  Legend,
   Line,
   ResponsiveContainer,
   Scatter,
@@ -32,31 +33,51 @@ export default function AnalysisChart({ points, model }) {
 
   return (
     <ResponsiveContainer width="100%" height={360}>
-      <ComposedChart margin={{ top: 16, right: 24, bottom: 16, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+      <ComposedChart margin={{ top: 8, right: 16, bottom: 16, left: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--gridline)" />
         <XAxis
           dataKey="temperature_bin_center"
           type="number"
           domain={["dataMin", "dataMax"]}
-          label={{ value: "Temperature (°C)", position: "insideBottom", offset: -8, fill: "#94a3b8" }}
-          stroke="#94a3b8"
+          tickFormatter={(value) => `${Math.round(value)}°`}
+          label={{ value: "Temperature (°C)", position: "insideBottom", offset: -8, fill: "var(--ink-muted)" }}
+          stroke="var(--axis)"
+          tick={{ fill: "var(--ink-muted)" }}
         />
         <YAxis
           dataKey="activity_frequency"
-          label={{ value: "Activity frequency", angle: -90, position: "insideLeft", fill: "#94a3b8" }}
-          stroke="#94a3b8"
+          label={{
+            value: "Activity frequency",
+            angle: -90,
+            position: "insideLeft",
+            fill: "var(--ink-muted)",
+          }}
+          stroke="var(--axis)"
+          tick={{ fill: "var(--ink-muted)" }}
         />
         <Tooltip
-          contentStyle={{ background: "#1e293b", border: "1px solid #334155" }}
+          contentStyle={{
+            background: "var(--surface-card-raised)",
+            border: "1px solid var(--border-hairline)",
+            borderRadius: 8,
+            color: "var(--ink-primary)",
+          }}
           formatter={(value, name) => [Number(value).toFixed(3), name]}
           labelFormatter={(value) => `${Number(value).toFixed(1)}°C`}
         />
-        <Scatter name="Observed frequency" data={points} dataKey="activity_frequency" fill="#38bdf8" />
+        <Legend wrapperStyle={{ color: "var(--ink-secondary)", fontSize: "0.85rem" }} />
+        <Scatter
+          name="Observed frequency"
+          data={points}
+          dataKey="activity_frequency"
+          fill="var(--series-observed)"
+        />
         <Line
           name={`Fitted (degree ${model.degree})`}
           data={curve}
           dataKey="fitted_frequency"
-          stroke="#f472b6"
+          stroke="var(--series-fitted)"
+          strokeWidth={2}
           dot={false}
           type="monotone"
         />
