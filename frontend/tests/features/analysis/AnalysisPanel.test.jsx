@@ -1,5 +1,8 @@
+import { configureStore } from "@reduxjs/toolkit";
 import { render, screen, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import analysisReducer from "../../../src/features/analysis/analysisSlice";
 import { AnalysisPanel } from "../../../src/features/analysis";
 
 const sampleResponse = {
@@ -19,6 +22,11 @@ const sampleResponse = {
   },
 };
 
+function renderWithStore(ui) {
+  const store = configureStore({ reducer: { analysis: analysisReducer } });
+  return render(<Provider store={store}>{ui}</Provider>);
+}
+
 describe("AnalysisPanel", () => {
   beforeEach(() => {
     vi.stubGlobal(
@@ -31,13 +39,13 @@ describe("AnalysisPanel", () => {
   });
 
   it("shows the quadratic model's R-squared once data loads", async () => {
-    render(<AnalysisPanel />);
+    renderWithStore(<AnalysisPanel />);
     await waitFor(() => expect(screen.getByText(/R² = 0.890/)).toBeInTheDocument());
   });
 
   it("shows an error message when the analysis request fails", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 }));
-    render(<AnalysisPanel />);
+    renderWithStore(<AnalysisPanel />);
     await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
   });
 });

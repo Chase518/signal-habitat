@@ -1,8 +1,10 @@
+import { NavLink } from "react-router-dom";
+
 const NAV_ITEMS = [
-  { label: "Analysis", active: true },
-  { label: "Sensors", active: false },
-  { label: "Detections", active: false },
-  { label: "Alerts", active: false },
+  { label: "Analysis", path: "/", implemented: true },
+  { label: "Sensors", path: "/sensors", implemented: false },
+  { label: "Detections", path: "/detections", implemented: false },
+  { label: "Alerts", path: "/alerts", implemented: false },
 ];
 
 export default function AppLayout({ children }) {
@@ -26,23 +28,25 @@ export default function AppLayout({ children }) {
 
         <nav style={{ display: "flex", gap: "var(--space-1)" }}>
           {NAV_ITEMS.map((item) => (
-            <span
-              key={item.label}
-              title={item.active ? undefined : "Not implemented in this demo"}
-              style={{
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === "/"}
+              title={item.implemented ? undefined : "Not implemented in this demo yet"}
+              style={({ isActive }) => ({
                 padding: "6px 12px",
                 borderRadius: "var(--radius-control)",
                 fontSize: "0.85rem",
-                color: item.active ? "var(--ink-primary)" : "var(--ink-muted)",
-                background: item.active ? "var(--surface-card-raised)" : "transparent",
-                cursor: item.active ? "default" : "not-allowed",
+                textDecoration: "none",
+                color: isActive ? "var(--ink-primary)" : "var(--ink-muted)",
+                background: isActive ? "var(--surface-card-raised)" : "transparent",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 6,
-              }}
+              })}
             >
               {item.label}
-              {!item.active && (
+              {!item.implemented && (
                 <span
                   style={{
                     fontSize: "0.65rem",
@@ -55,7 +59,7 @@ export default function AppLayout({ children }) {
                   soon
                 </span>
               )}
-            </span>
+            </NavLink>
           ))}
         </nav>
       </header>

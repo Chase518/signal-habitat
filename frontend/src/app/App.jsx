@@ -1,5 +1,13 @@
-import AnalysisPage from "../pages/AnalysisPage";
+import { BrowserRouter } from "react-router-dom";
+import { AppLayout } from "../layouts";
+import AppRoutes from "../routes/AppRoutes";
 
 export default function App() {
-  return <AnalysisPage />;
+  return (
+    <BrowserRouter>
+      <AppLayout>
+        <AppRoutes />
+      </AppLayout>
+    </BrowserRouter>
+  );
 }
