@@ -1,0 +1,27 @@
+services:
+  analysis:
+    build:
+      context: ..
+      dockerfile: docker/python.Dockerfile
+    ports:
+      - "8000:8000"
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/java.Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../data:/data
+    depends_on:
+      - analysis
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
