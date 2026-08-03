@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, SegmentedControl, StatTile } from "../../../shared";
-import { fetchAnalysis } from "../api/analysisApi";
+import { loadAnalysis } from "../analysisSlice";
 import AnalysisChart from "./AnalysisChart";
 
 const MODEL_OPTIONS = [
@@ -9,20 +10,22 @@ const MODEL_OPTIONS = [
 ];
 
 export default function AnalysisPanel() {
-  const [analysis, setAnalysis] = useState(null);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { data: analysis, status, error } = useSelector((state) => state.analysis);
   const [modelKey, setModelKey] = useState("quadratic");
 
   useEffect(() => {
-    fetchAnalysis().then(setAnalysis).catch(setError);
-  }, []);
+    if (status === "idle") {
+      dispatch(loadAnalysis());
+    }
+  }, [status, dispatch]);
 
-  if (error) {
+  if (status === "failed") {
     return (
       <Card>
         <p role="alert" style={{ margin: 0, color: "var(--ink-secondary)" }}>
-          Could not load analysis data — is the analysis service running on{" "}
-          <code>localhost:8000</code>?
+          Could not load analysis data ({error}) — is the analysis service running on{" "}
+          <code>localhost:8080</code>?
         </p>
       </Card>
     );
