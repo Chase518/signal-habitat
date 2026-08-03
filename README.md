@@ -76,11 +76,21 @@ out of scope for this project.
 ## Status
 
 🚧 In active development. Build order: analysis core → API skeleton →
-frontend → hexagonal backend hardening → Docker Compose. Everything up
-through the hexagonal backend is done and wired end-to-end; Docker
-Compose is the remaining step.
+frontend → hexagonal backend hardening → Docker Compose. All five
+steps are done and wired end-to-end.
 
-## Running locally
+## Running with Docker
+
+```bash
+docker compose -f docker/docker-compose.yml up --build
+```
+
+Then open `http://localhost:5173`. This builds and runs all three
+services together (frontend on nginx, Java backend, Python analysis
+service) with the SQLite cache bind-mounted to the host's `data/`
+directory.
+
+## Running locally (without Docker)
 
 All three services need to be running at once — start each in its own
 terminal.
