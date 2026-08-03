@@ -76,8 +76,45 @@ out of scope for this project.
 ## Status
 
 🚧 In active development. Build order: analysis core → API skeleton →
-frontend → hexagonal backend hardening → Docker Compose.
+frontend → hexagonal backend hardening → Docker Compose. Everything up
+through the hexagonal backend is done and wired end-to-end; Docker
+Compose is the remaining step.
 
 ## Running locally
 
-_(to be filled in as each layer becomes runnable)_
+All three services need to be running at once — start each in its own
+terminal.
+
+**1. Python analysis service** (port 8000):
+
+```bash
+cd analysis-python
+python3 -m venv .venv && source .venv/bin/activate  # first time only
+pip install -r requirements.txt                       # first time only
+uvicorn app.main:app --port 8000
+```
+
+**2. Java backend** (port 8080) — requires JDK 21+ and Maven:
+
+```bash
+cd backend-java
+mvn quarkus:dev
+```
+
+**3. Frontend** (port 5173):
+
+```bash
+cd frontend
+npm install   # first time only
+npm run dev
+```
+
+Then open `http://localhost:5173`.
+
+### Tests
+
+```bash
+cd analysis-python && source .venv/bin/activate && python -m pytest
+cd backend-java && mvn test
+cd frontend && npx vitest run
+```
