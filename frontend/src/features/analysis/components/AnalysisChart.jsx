@@ -9,10 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-function evaluatePolynomial(coefficients, x) {
-  return coefficients.reduce((sum, coefficient, power) => sum + coefficient * x ** power, 0);
-}
+import { evaluatePolynomial } from "../lib/polynomial";
 
 function buildCurve(coefficients, points, sampleCount = 60) {
   const temperatures = points.map((point) => point.temperature_bin_center);

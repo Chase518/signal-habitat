@@ -19,6 +19,8 @@ export default function SegmentedControl({ options, value, onChange, "aria-label
             type="button"
             role="radio"
             aria-checked={selected}
+            disabled={option.disabled}
+            title={option.disabled ? "Not implemented in this demo (see docs/decisions.md)" : undefined}
             onClick={() => onChange(option.value)}
             style={{
               border: "none",
@@ -26,13 +28,30 @@ export default function SegmentedControl({ options, value, onChange, "aria-label
               padding: "6px 14px",
               font: "inherit",
               fontSize: "0.9rem",
-              cursor: "pointer",
+              cursor: option.disabled ? "not-allowed" : "pointer",
               background: selected ? "var(--series-observed)" : "transparent",
-              color: selected ? "#ffffff" : "var(--ink-secondary)",
+              color: option.disabled ? "var(--ink-muted)" : selected ? "#ffffff" : "var(--ink-secondary)",
+              opacity: option.disabled ? 0.6 : 1,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
               transition: "background 120ms ease, color 120ms ease",
             }}
           >
             {option.label}
+            {option.disabled && (
+              <span
+                style={{
+                  fontSize: "0.65rem",
+                  padding: "1px 6px",
+                  borderRadius: 999,
+                  border: "1px solid var(--border-hairline)",
+                  color: "var(--ink-muted)",
+                }}
+              >
+                soon
+              </span>
+            )}
           </button>
         );
       })}
