@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { Card, SegmentedControl, StatTile } from "../../../shared";
 import { loadAnalysis } from "../analysisSlice";
 import AnalysisChart from "./AnalysisChart";
+import PredictionInput from "./PredictionInput";
 
 const MODEL_OPTIONS = [
   { label: "Linear", value: "linear" },
   { label: "Quadratic", value: "quadratic" },
+  { label: "Neural Network", value: "neural_network", disabled: true },
 ];
 
 export default function AnalysisPanel() {
@@ -42,6 +44,8 @@ export default function AnalysisPanel() {
   const model = analysis.models[modelKey];
   const { meta } = analysis;
   const confidenceRate = ((meta.confident_reading_count / meta.raw_reading_count) * 100).toFixed(1);
+  const temperatures = analysis.aggregated_points.map((point) => point.temperature_bin_center);
+  const observedRange = { min: Math.min(...temperatures), max: Math.max(...temperatures) };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
@@ -73,6 +77,7 @@ export default function AnalysisPanel() {
         }
       >
         <AnalysisChart points={analysis.aggregated_points} model={model} />
+        <PredictionInput model={model} observedRange={observedRange} />
       </Card>
     </div>
   );
