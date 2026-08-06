@@ -102,6 +102,18 @@ def generate_sensor_readings(seed: int = 42, missing_fraction: float = 0.03) -> 
     return pd.concat(frames, ignore_index=True)
 
 
+def generate_sensor_metadata() -> pd.DataFrame:
+    """Per-sensor descriptive attributes -- low update frequency, deliberately
+    kept out of sensor_reading (see 项目总纲.md's schema and app/storage.py).
+    """
+    faulty_sensor_id = SENSOR_IDS[-1]
+    return pd.DataFrame({
+        "sensor_id": SENSOR_IDS,
+        "base_temperature_c": [14.0 + i * 1.5 for i in range(len(SENSOR_IDS))],
+        "is_faulty": [sensor_id == faulty_sensor_id for sensor_id in SENSOR_IDS],
+    })
+
+
 def generate_detection_events(sensor_readings: pd.DataFrame, seed: int = 43) -> pd.DataFrame:
     """Simulate camera-trap detections keyed to the same timestamps.
 

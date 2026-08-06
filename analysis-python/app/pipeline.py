@@ -14,7 +14,18 @@ import pandas as pd
 from app.interpolate import interpolate_missing
 from app.quality import filter_low_confidence
 from app.regression import fit_activity_model
-from app.simulate import generate_detection_events, generate_sensor_readings
+from app.simulate import generate_detection_events, generate_sensor_metadata, generate_sensor_readings
+from app.storage import (
+    DEFAULT_DB_PATH,
+    get_connection,
+    has_readings,
+    init_schema,
+    load_detection_events,
+    load_sensor_readings,
+    save_detection_events,
+    save_sensor_metadata,
+    save_sensor_readings,
+)
 
 TEMPERATURE_BIN_WIDTH_C = 1.0
 
@@ -29,7 +40,11 @@ def aggregate_activity_by_temperature(
     warm" — this is the y variable the regression models.
     """
     merged = readings.merge(detections, on=["timestamp", "sensor_id"], how="left")
-    merged["detected"] = merged["detected"].fillna(False)
+    # Loaded-from-storage detections can leave this column as object dtype
+    # (NaN mixed with Python bool after the left join); force real bool
+    # dtype so the later groupby("detected").sum() always yields a plain
+    # int, not a stray Python `False` for an all-absent bin.
+    merged["detected"] = merged["detected"].fillna(False).astype(bool)
 
     bin_edges = np.arange(
         np.floor(merged["temperature"].min()),
@@ -50,11 +65,36 @@ def aggregate_activity_by_temperature(
     ]
 
 
-def run_pipeline(seed: int = 42) -> dict:
+def _load_or_generate_raw_data(seed: int, db_path: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Generate sensor_reading/detection_event once and persist them; every
+    later call (any process, as long as db_path is unchanged) reads the
+    same stored rows instead of re-simulating -- the same
+    generate-once-reuse-many pattern the Java backend applies to its own
+    analysis_result cache (see docs/decisions.md).
+    """
+    conn = get_connection(db_path)
+    init_schema(conn)
+
+    if has_readings(conn):
+        raw_readings = load_sensor_readings(conn)
+        detections = load_detection_events(conn)
+    else:
+        raw_readings = generate_sensor_readings(seed=seed)
+        interpolated_for_detection = interpolate_missing(raw_readings)
+        detections = generate_detection_events(interpolated_for_detection, seed=seed + 1)
+
+        save_sensor_metadata(conn, generate_sensor_metadata())
+        save_sensor_readings(conn, raw_readings)
+        save_detection_events(conn, detections[detections["detected"]])
+
+    conn.close()
+    return raw_readings, detections
+
+
+def run_pipeline(seed: int = 42, db_path: Path = DEFAULT_DB_PATH) -> dict:
     """Run the full pipeline and return a JSON-serializable result dict."""
-    raw_readings = generate_sensor_readings(seed=seed)
+    raw_readings, detections = _load_or_generate_raw_data(seed, db_path)
     interpolated = interpolate_missing(raw_readings)
-    detections = generate_detection_events(interpolated, seed=seed + 1)
     confident_readings = filter_low_confidence(interpolated)
 
     aggregated = aggregate_activity_by_temperature(confident_readings, detections)
