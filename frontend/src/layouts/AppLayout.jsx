@@ -2,8 +2,8 @@ import { NavLink } from "react-router-dom";
 
 const NAV_ITEMS = [
   { label: "Analysis", path: "/", implemented: true },
-  { label: "Sensors", path: "/sensors", implemented: false },
-  { label: "Detections", path: "/detections", implemented: false },
+  { label: "Sensors", path: "/sensors", implemented: true },
+  { label: "Detections", path: "/detections", implemented: true },
   { label: "Alerts", path: "/alerts", implemented: false },
 ];
 
