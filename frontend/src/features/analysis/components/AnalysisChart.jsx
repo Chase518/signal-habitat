@@ -11,18 +11,20 @@ import {
 } from "recharts";
 import { evaluatePolynomial } from "../lib/polynomial";
 
-function buildCurve(coefficients, points, sampleCount = 60) {
-  const temperatures = points.map((point) => point.temperature_bin_center);
-  const min = Math.min(...temperatures);
-  const max = Math.max(...temperatures);
-  const step = (max - min) / (sampleCount - 1);
-  return Array.from({ length: sampleCount }, (_, i) => {
-    const temperature_bin_center = min + i * step;
-    return {
+function buildCurve(coefficients, points) {
+  // Sample the fitted curve at the exact same x-values as the scatter
+  // points (rather than an independent even sampling) so both series
+  // share x-coordinates -- Recharts' tooltip matches series by nearest
+  // index, not by true x-value, so mismatched x-arrays make it pair up
+  // an "observed" point with a "fitted" point from a different
+  // temperature and label the tooltip with whichever x it picked first.
+  return points
+    .map((point) => point.temperature_bin_center)
+    .sort((a, b) => a - b)
+    .map((temperature_bin_center) => ({
       temperature_bin_center,
       fitted_frequency: evaluatePolynomial(coefficients, temperature_bin_center),
-    };
-  });
+    }));
 }
 
 export default function AnalysisChart({ points, model }) {
