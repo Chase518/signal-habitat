@@ -30,6 +30,36 @@ public class SqliteConnectionProvider {
                         payload_json TEXT NOT NULL
                     )
                     """);
+            // sensor_metadata/sensor_reading/detection_event are owned (written) by
+            // the Python service (see analysis-python/app/storage.py) -- Java only
+            // reads them, but declares the same schema here defensively so the
+            // Sensors/Detections views don't 500 on a fresh checkout where Java
+            // starts before Python has ever run once.
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS sensor_metadata (
+                        sensor_id TEXT PRIMARY KEY,
+                        base_temperature_c REAL NOT NULL,
+                        is_faulty INTEGER NOT NULL
+                    )
+                    """);
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS sensor_reading (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        sensor_id TEXT NOT NULL REFERENCES sensor_metadata(sensor_id),
+                        timestamp TEXT NOT NULL,
+                        temperature REAL,
+                        humidity REAL,
+                        battery REAL NOT NULL,
+                        rssi REAL NOT NULL
+                    )
+                    """);
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS detection_event (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        sensor_id TEXT NOT NULL REFERENCES sensor_metadata(sensor_id),
+                        timestamp TEXT NOT NULL
+                    )
+                    """);
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to initialize SQLite schema", e);
         }
