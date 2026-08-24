@@ -12,9 +12,17 @@
   --axis: #383835;
   --border-hairline: rgba(255, 255, 255, 0.1);
 
-  /* Categorical series slots 1 & 2 (dark) */
-  --series-observed: #3987e5;
-  --series-fitted: #d95926;
+  /* Categorical series slots, fixed order (dark) -- assign by position,
+     never cycled, see dataviz skill's color-formula.md */
+  --series-observed: #3987e5; /* slot 1: blue */
+  --series-fitted: #d95926; /* slot 2: orange */
+  --series-3: #199e70; /* aqua */
+  --series-4: #c98500; /* yellow */
+  --series-5: #d55181; /* magenta */
+
+  /* Status palette (fixed, never themed -- reserved, not reused for series identity) */
+  --status-good: #0ca30c;
+  --status-critical: #d03b3b;
 
   --radius-card: 12px;
   --radius-control: 8px;
