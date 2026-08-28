@@ -25,6 +25,25 @@ fine-grained classification, user auth, real LoRaWAN hardware integration,
 neural-network fitting (placeholder only), agentic/self-extending analysis
 tools.
 
+## Screenshots
+
+**Analysis** — the core business question: activity frequency vs.
+temperature, with a switchable linear/quadratic/neural-network (placeholder)
+fit and a live prediction input.
+
+![Analysis page](docs/screenshots/analysis.png)
+
+**Sensors** — per-sensor battery/signal status and a 7-day battery trend;
+the simulated S5 sensor is deliberately modeled as failing hardware so the
+confidence filter has something real to catch.
+
+![Sensors page](docs/screenshots/sensors.png)
+
+**Detections** — camera-trap detection events over time, with a
+day-by-day breakdown and a recent-events log.
+
+![Detections page](docs/screenshots/detections.png)
+
 ## Architecture
 
 ```
@@ -64,6 +83,7 @@ signal-habitat/
 ├── docker/                     # Dockerfiles + docker-compose.yml
 ├── data/                        # generated/sample data (gitignored where large)
 ├── docs/decisions.md            # architecture decision log (top-level only)
+├── docs/screenshots/             # README screenshots
 └── 进度规则与记录/                # gitignored — workflow docs, not project code
 ```
 
@@ -76,8 +96,9 @@ out of scope for this project.
 ## Status
 
 🚧 In active development. Build order: analysis core → API skeleton →
-frontend → hexagonal backend hardening → Docker Compose. All five
-steps are done and wired end-to-end.
+frontend → hexagonal backend hardening → Docker Compose — all five
+steps are done and wired end-to-end. `Analysis`, `Sensors`, and
+`Detections` are real; `Alerts` is still a UI placeholder.
 
 ## Running with Docker
 
